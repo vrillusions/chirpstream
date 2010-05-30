@@ -48,7 +48,7 @@ class PresenceAcceptingHandler(xmppim.PresenceProtocol):
 
         Always grant permission to see our presence.
         """
-		self.subscribe(presence.sender)
+        self.subscribe(presence.sender)
         self.subscribed(recipient=presence.sender,
                         sender=presence.recipient)
         self.available(recipient=presence.sender,
@@ -61,7 +61,7 @@ class PresenceAcceptingHandler(xmppim.PresenceProtocol):
 
         Always confirm unsubscription requests.
         """
-		self.unsubscribe(presence.sender)
+        self.unsubscribe(presence.sender)
         self.unsubscribed(recipient=presence.sender,
                           sender=presence.recipient)
 
@@ -75,26 +75,26 @@ class PresenceAcceptingHandler(xmppim.PresenceProtocol):
                        status=u"I'm here",
                        sender=presence.recipient)
 
-					   
+
 class MessageHandler(xmppim.MessageProtocol):
     """
     Message echoing XMPP subprotocol handler.
     """
 
-	def _sendMessage(self, msg, jid):
-		response = domish.Element((None, 'message'))
-		response['to'] = jid
-		response['type'] = 'chat'
-		response.addElement('body', content=unicode(msg))
-		self.send(response)
-	
+    def _sendMessage(self, msg, jid):
+        response = domish.Element((None, 'message'))
+        response['to'] = jid
+        response['type'] = 'chat'
+        response.addElement('body', content=unicode(msg))
+        self.send(response)
+    
     def onMessage(self, message):
         # Ignore error messages
         if message.getAttribute('type') == 'error':
             return
-		
-		if message.body and unicode(message.body):
-			self._sendMessage(message.body, message['from'])
+        
+        if message.body and unicode(message.body):
+            self._sendMessage(message.body, message['from'])
 
 
 application = service.Application('Chirpstream')
