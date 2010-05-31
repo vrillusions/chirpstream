@@ -47,7 +47,7 @@ class PresenceAcceptingHandler(PresenceProtocol):
 
         Always grant permission to see our presence.
         
-		"""
+        """
         self.subscribe(presence.sender)
         self.subscribed(recipient=presence.sender,
                         sender=presence.recipient)
@@ -61,7 +61,7 @@ class PresenceAcceptingHandler(PresenceProtocol):
 
         Always confirm unsubscription requests.
         
-		"""
+        """
         self.unsubscribe(presence.sender)
         self.unsubscribed(recipient=presence.sender,
                           sender=presence.recipient)
@@ -72,7 +72,7 @@ class PresenceAcceptingHandler(PresenceProtocol):
 
         Always send available presence to whoever is asking.
         
-		"""
+        """
         self.available(recipient=presence.sender,
                        status=u"I'm here",
                        sender=presence.recipient)
@@ -80,14 +80,14 @@ class PresenceAcceptingHandler(PresenceProtocol):
 
 class ChirpbotProtocol(MessageProtocol):
     """Message subprotocol handler."""
-	def connectionMade(self):
-		print 'Client connected.'
-		# Send initial presence
-		self.send(AvailablePresence())
-	
-	def connectionLost(self, reason):
-		print 'Connection lost:', reason
-	
+    def connectionMade(self):
+        print 'Client connected.'
+        # Send initial presence
+        self.send(AvailablePresence())
+    
+    def connectionLost(self, reason):
+        print 'Connection lost:', reason
+    
     def _sendMessage(self, msg, jid):
         response = domish.Element((None, 'message'))
         response['to'] = jid
