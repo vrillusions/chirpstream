@@ -15,24 +15,23 @@ from twisted.words.protocols.jabber.jid import JID
 from twisted.words.protocols.jabber.xmlstream import toResponse
 
 from wokkel import client
-from wokkel import xmppim
+from wokkel.xmppim import MessageProtocol
+from wokkel.xmppim import PresenceProtocol
+from wokkel.xmppim import AvailablePresence
 
-import nicedump
 
 config = ConfigParser.RawConfigParser()
 config.read('config.ini')
 jid = JID(config.get('login', 'jid'))
 password = config.get('login', 'password')
 
-class PresenceAcceptingHandler(xmppim.PresenceProtocol):
+class PresenceAcceptingHandler(PresenceProtocol):
     """
     Presence accepting XMPP subprotocol handler.
 
     This handler blindly accepts incoming presence subscription requests,
     confirms unsubscription requests and responds to presence probes.
 
-    Note that this handler does not remember any contacts, so it will not
-    send presence when starting.
     """
     def subscribedReceived(self, presence):
         """Subscription approval confirmation was received."""
@@ -47,7 +46,8 @@ class PresenceAcceptingHandler(xmppim.PresenceProtocol):
         Subscription request was received.
 
         Always grant permission to see our presence.
-        """
+        
+		"""
         self.subscribe(presence.sender)
         self.subscribed(recipient=presence.sender,
                         sender=presence.recipient)
@@ -60,7 +60,8 @@ class PresenceAcceptingHandler(xmppim.PresenceProtocol):
         Unsubscription request was received.
 
         Always confirm unsubscription requests.
-        """
+        
+		"""
         self.unsubscribe(presence.sender)
         self.unsubscribed(recipient=presence.sender,
                           sender=presence.recipient)
@@ -70,17 +71,23 @@ class PresenceAcceptingHandler(xmppim.PresenceProtocol):
         A presence probe was received.
 
         Always send available presence to whoever is asking.
-        """
+        
+		"""
         self.available(recipient=presence.sender,
                        status=u"I'm here",
                        sender=presence.recipient)
 
 
-class MessageHandler(xmppim.MessageProtocol):
-    """
-    Message echoing XMPP subprotocol handler.
-    """
-
+class ChirpbotProtocol(MessageProtocol):
+    """Message subprotocol handler."""
+	def connectionMade(self):
+		print 'Client connected.'
+		# Send initial presence
+		self.send(AvailablePresence())
+	
+	def connectionLost(self, reason):
+		print 'Connection lost:', reason
+	
     def _sendMessage(self, msg, jid):
         response = domish.Element((None, 'message'))
         response['to'] = jid
@@ -104,7 +111,6 @@ xmppClient.setServiceParent(application)
 
 presenceHandler = PresenceAcceptingHandler()
 presenceHandler.setHandlerParent(xmppClient)
-presenceHandler.available()
 
-messageHandler = MessageHandler()
-messageHandler.setHandlerParent(xmppClient)
+chirpbot = ChirpbotProtocol()
+chirpbot.setHandlerParent(xmppClient)
