@@ -6,19 +6,25 @@ Chirpstream is a xmpp (jabber) bot that connects to twitter's user stream api.
 
 Currently the user stream api is in beta with limited capability.  This should only be used for development until twitter finally releases it from beta later this year.
 
+## Setup
+
+* git clone git://github.com/chirpstream.git
+* git submodule init
+* git submodule update
+* copy config.sample.ini to config.ini and edit
+* twistd -y chirpstream.tac
+
 ## Features
 
-This is intended to be a single-user bot as of right now.  There won't be a central bot that allows multiple people to connect.  Will be designed to make that option fairly easy to implement in the future, hopefully.
+* Streams messages from all people you are following
 
-Other features:
+## Roadmap
 
-* works with twitter's lists (ie only follow people in your "friends" list)
+Items that are planned to be implemented
+
+* works with twitter's list functionality (ie only follow people in a specific list)
 * posting, including handling url shortening
-
-Future features under consideration:
-
-* posting. Initial version will be more of just a consumer instead of publishing
-* (post v1) support identi.ca in some way (possibly branch to new project)
+* (post v1) support identi.ca in some way
 
 ## Purpose
 
@@ -26,6 +32,6 @@ This is going to be my biggest python project yet and using it as a learning exe
 
 ## Requirements
 
-* Python v2.6
+* Python v2.6 - may work in older versions but no guarantees
 * [Twisted](http://twistedmatrix.com/trac/) - specifics will be mentioned once  I figure it out myself
 
