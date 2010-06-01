@@ -9,6 +9,7 @@ import sys
 sys.path.append('wokkel')
 
 import ConfigParser
+import inspect
 from twisted.application import service
 from twisted.words.xish import domish
 from twisted.words.protocols.jabber.jid import JID
@@ -20,6 +21,7 @@ from wokkel.xmppim import PresenceProtocol
 from wokkel.xmppim import AvailablePresence
 from wokkel.keepalive import KeepAlive
 
+from botcommands import BotCommands
 
 config = ConfigParser.RawConfigParser()
 config.read('config.ini')
@@ -81,6 +83,13 @@ class PresenceAcceptingHandler(PresenceProtocol):
 
 class ChirpbotProtocol(MessageProtocol):
     """Message subprotocol handler."""
+    def __init__(self):
+        self.commands = {}
+        botcommands = BotCommands()
+        for (name, value) in inspect.getmembers(botcommands, inspect.ismethod):
+            # todo: filter private methods
+            self.commands[name] = value
+    
     def connectionMade(self):
         print 'Client connected.'
         # Send initial presence
@@ -102,7 +111,15 @@ class ChirpbotProtocol(MessageProtocol):
             return
         
         if message.body and unicode(message.body):
-            self._sendMessage(message.body, message['from'])
+            parts = unicode(message.body).split(' ', 1)
+            cmd = parts[0]
+            args = parts[1] if len(parts) > 1 else ''
+            
+            if cmd in self.commands:
+                result = self.commands[cmd](args)
+            else:
+                result = 'Unknown command'
+            self._sendMessage(result, message['from'])
 
 
 application = service.Application('Chirpstream')
