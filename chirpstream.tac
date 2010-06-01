@@ -18,6 +18,7 @@ from wokkel import client
 from wokkel.xmppim import MessageProtocol
 from wokkel.xmppim import PresenceProtocol
 from wokkel.xmppim import AvailablePresence
+from wokkel.keepalive import KeepAlive
 
 
 config = ConfigParser.RawConfigParser()
@@ -108,6 +109,7 @@ application = service.Application('Chirpstream')
 xmppClient = client.XMPPClient(jid, password)
 xmppClient.logTraffic = True
 xmppClient.setServiceParent(application)
+KeepAlive().setHandlerParent(xmppClient)
 
 presenceHandler = PresenceAcceptingHandler()
 presenceHandler.setHandlerParent(xmppClient)
